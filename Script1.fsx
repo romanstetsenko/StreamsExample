@@ -39,13 +39,13 @@ module Implementations =
         |> tryParse
         |> Result.map (fun x -> { id = x })
     
-    let readEachValue x =
+    let private readEachValue x =
         printfn "Reading db value: %i " x
         Thread.Sleep(1000)
         printfn "Db value read: %i " x
         string x
     
-    let readEachValueAsync x =
+    let private readEachValueAsync x =
         async { 
             printfn "Reading db value: %i " x
             Thread.Sleep(1000)
