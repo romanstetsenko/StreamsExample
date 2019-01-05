@@ -19,6 +19,15 @@ type ProcessedDataA =
     { id : int
       aggregatedValue : string }
 
+type Guard = JsonA -> Result<DbRequestA, string>
+
+type DbReader = DbRequestA -> Result<RawDataA, string>
+
+type BussinesLogic =  RawDataA -> ProcessedDataA
+
+type GenericWorkFlow = JsonA -> DbRequestA -> RawDataA
+
+
 module Implementations =
     let private tryParse s =
         match Int32.TryParse s with
