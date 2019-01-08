@@ -18,6 +18,7 @@ type BussinesLogic = ValuableData -> Result<ValuableData, string>
 type GenericWorkFlow = ValuableData -> ValuableData -> ValuableData -> ValuableData
 
 module Implementations =
+
     let randomlyWait (x : int) =
         let delta = (float x) * 0.05 |> int
         Random().Next(x - delta, x + delta) |> Thread.Sleep
@@ -101,7 +102,7 @@ module Posibilities =
            Handler Implementations.dbReaderSequential
            Handler Implementations.bussinesLogic |]
     
-    let loggedSomeHandlers =
+    let _loggedSomeHandlers =
         someHandlers
         |> Array.map (fun (Handler handler) -> 
                let wrapper valuableData =
@@ -127,7 +128,9 @@ let wofkflowBuilder (guard : Guard) (dbReader : DbReader)
 let runWf1Seq input =
     printfn "//// Sequential ////"
     let wf =
-        wofkflowBuilder Implementations.guard Implementations.dbReaderSequential 
+        wofkflowBuilder 
+            Implementations.guard 
+            Implementations.dbReaderSequential 
             Implementations.bussinesLogic
     wf input
 
@@ -138,7 +141,9 @@ runWf1Seq (Json "!@#$%^")
 let runWf1Par input =
     printfn "//// Sequential + dbReaderParallel ////"
     let wf =
-        wofkflowBuilder Implementations.guard Implementations.dbReaderParallel 
+        wofkflowBuilder 
+            Implementations.guard 
+            Implementations.dbReaderParallel 
             Implementations.bussinesLogic
     wf input
 
@@ -148,25 +153,17 @@ runWf1Par (Json "!@#$%^")
 //--------------------
 let forkBL (DataSet(id, values)) =
     values
-    |> Array.map 
-           (fun value -> 
-           async { return (Implementations.bussinesLogicMap (Map value)) })
-    |> (Async.Parallel
-        >> Async.Catch
-        >> Async.RunSynchronously)
-    |> function 
-    | Choice2Of2 e -> Error e.Message
-    | Choice1Of2 values -> Ok values
-    |> Result.bind 
-           (fun values -> 
-           Implementations.bussinesLogicReduce (Reduce(id, values)))
+    |> Array.Parallel.map (fun value -> Implementations.bussinesLogicMap (Map value))
+    |> (fun values -> Implementations.bussinesLogicReduce (Reduce(id, values)))
 
 let runWf1Complicated input =
     printfn "//// Parallel ////"
     let wf =
-        wofkflowBuilder Implementations.guard Implementations.dbReaderParallel 
+        wofkflowBuilder 
+            Implementations.guard 
+            Implementations.dbReaderParallel 
             forkBL
     wf input
 
-runWf1Complicated (Json "10")
+runWf1Complicated (Json "5")
 runWf1Complicated (Json "!@#$%^")
