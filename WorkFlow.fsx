@@ -121,10 +121,14 @@ let wofkflowBuilder (guard : Guard) (dbReader : DbReader)
     //    if dbReaderResult is Ok then 
     //        let bussinesLogicResult = bussinesLogic dbReaderResult.Value
     //        if bussinesLogicResult is Ok 
-    //            then return bussinesLogicResult
-    //        else throw
-    //    else throw
-    //else throw
+    //            then 
+    //                bussinesLogicResult
+    //        else 
+    //            bussinesLogicResult.ErrorValue
+    //    else 
+    //        dbReaderResult.ErrorValue
+    //else 
+    //    guardResult.ErrorValue
     guard
     >> Result.bind dbReader
     >> Result.bind bussinesLogic
