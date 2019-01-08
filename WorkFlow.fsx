@@ -114,10 +114,17 @@ module Posibilities =
 
 let wofkflowBuilder (guard : Guard) (dbReader : DbReader) 
     (bussinesLogic : BussinesLogic) =
-    //let result1 = guard input
-    //let result2 = Result.bind dbReader result1
-    //let result3 = Result.bind bussinesLogic result2
-    //return result3
+    //let guardResult = guard input
+    //if guardResult is Ok  
+    //then 
+    //    let dbReaderResult = dbReader guardResult.Value
+    //    if dbReaderResult is Ok then 
+    //        let bussinesLogicResult = bussinesLogic dbReaderResult.Value
+    //        if bussinesLogicResult is Ok 
+    //            then return bussinesLogicResult
+    //        else throw
+    //    else throw
+    //else throw
     guard
     >> Result.bind dbReader
     >> Result.bind bussinesLogic
